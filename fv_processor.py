@@ -17,19 +17,57 @@
 
 # In[1]:
 
-#from __main__ import *
-#from tkinter_script import tkinter_display
-
-import nltk
-import pandas as pd
-import numpy as np
+import sys
 import os
-from nltk.stem.porter import *
-from tqdm import tqdm
-from IPython.display import display, HTML
-from IPython.core.interactiveshell import InteractiveShell
-InteractiveShell.ast_node_interactivity = "all"
+import dlib
+import glob
+from skimage import io
+from sklearn.metrics.pairwise import euclidean_distances
+import pandas as pd
+from tqdm import tqdm #Optional, for tracking progress of for loop
 import time
+
+# Set-up of parameters
+## Facial detection
+detector = dlib.get_frontal_face_detector()
+
+## Landmark extraction
+if hasattr(sys, "_MEIPASS"):
+    predictor_path = os.path.join(sys._MEIPASS, 'shape_predictor_68_face_landmarks.dat')
+else:
+    predictor_path = 'shape_predictor_68_face_landmarks.dat'
+
+sp = dlib.shape_predictor(predictor_path)
+
+## Facial recognition
+if hasattr(sys, "_MEIPASS"):
+    face_rec_model_path = os.path.join(sys._MEIPASS, 'dlib_face_recognition_resnet_model_v1.dat')
+else:
+    face_rec_model_path = 'dlib_face_recognition_resnet_model_v1.dat'
+
+facerec = dlib.face_recognition_model_v1(face_rec_model_path)
+
+## Filename directory
+#file_pairings = pd.read_excel('Filenames.xlsx')
+file_pairings = pd.read_excel('../../../demo_faces/demo_filename_pairings.xlsx')
+#images_directory_path = '/images/'
+images_directory_path = '../../../demo_faces/'
+
+# Precision parameter (lower number = faster runtime, less accuracy; speed of 1 -> 99.13% accuracy, 100 -> 99.38%)
+speed = 1
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def smart_print(the_message, messages_pipe = None):
     if __name__ == "__main__":

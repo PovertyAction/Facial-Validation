@@ -10,9 +10,10 @@ from datetime import datetime
 from multiprocessing import Process, Pipe
 import multiprocessing
 multiprocessing.freeze_support()
-import PII_data_processor
+import fv_processor
 from PIL import ImageTk, Image
 import webbrowser
+import pandas as pd
 
 intro_text = "This script is meant to assist in the detection of PII (personally identifiable information) and subsequent removal from a dataset."
 intro_text_p2 = "Ensuring the dataset is devoid of PII is ultimately still your responsibility. Be careful with potential identifiers, especially geographic, because they can sometimes be combined with other variables to become identifying."
@@ -68,6 +69,8 @@ def tkinter_display(the_message):
 def file_select():
 
     dataset_path = askopenfilename()
+    dataset_import = pd.read_excel(dataset_path)
+    (NOW ADD THINGS TO GRAB PATHS FROM EXCEL)
 
     tkinter_display('Scroll down for status updates.')
     tkinter_display('The script is running...')
@@ -80,10 +83,10 @@ def file_select():
         ### Importing dataset and printing messages ###
         tkinter_functions_conn.send(dataset_path)
 
-        p_import = Process(target=PII_data_processor.import_dataset, args=(datap_functions_conn, datap_messages_conn))
-        p_import.start()
+        #p_import = Process(target=PII_data_processor.import_dataset, args=(datap_functions_conn, datap_messages_conn))
+        #p_import.start()
 
-        tkinter_display(tkinter_messages_conn.recv())
+        #tkinter_display(tkinter_messages_conn.recv())
 
         import_results = tkinter_functions_conn.recv()  # dataset, dataset_path, label_dict, value_label_dict
         dataset = import_results[0]
@@ -271,7 +274,7 @@ if __name__ == '__main__':
     ttk.Label(frame, text=intro_text_p3, wraplength=546, justify=LEFT, font=("Calibri", 11), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 30))
 
     ttk.Label(frame, text="Start Application: ", wraplength=546, justify=LEFT, font=("Calibri", 12, 'bold'), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 10))
-    ttk.Button(frame, text="Select Dataset", command=file_select, style='my.TButton').pack(anchor='nw', padx=(30, 30), pady=(0, 30))
+    ttk.Button(frame, text="Select Input Sheet", command=file_select, style='my.TButton').pack(anchor='nw', padx=(30, 30), pady=(0, 30))
 
     ttk.Label(frame, text="Options:", justify=LEFT, font=("Calibri", 12, 'bold'), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 10))
 
