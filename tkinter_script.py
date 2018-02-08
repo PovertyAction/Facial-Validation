@@ -15,10 +15,10 @@ from PIL import ImageTk, Image
 import webbrowser
 import pandas as pd
 
-intro_text = "This script is meant to assist in the detection of PII (personally identifiable information) and subsequent removal from a dataset."
-intro_text_p2 = "Ensuring the dataset is devoid of PII is ultimately still your responsibility. Be careful with potential identifiers, especially geographic, because they can sometimes be combined with other variables to become identifying."
+intro_text = "This script detects whether two pictures are of the same person. It may be used to help ensure the same person is being interviewed between waves, to detect when someone enrolls more than once in a program, or any other use."
+intro_text_p2 = "Though this tool can be helpful, ensuring identity is ultimately still your responsibility."
 intro_text_p3 = "*This version is customized for Windows 7. It has limited functionality. It is recommended you use the versions for Windows 10, OSX, or Linux if possible."
-app_title = "IPA's PII Detector, Cleaner, and Recoder - Windows 7*"
+app_title = "IPA's Facial Validator - Windows 7*"
 
 
 class GUI:
@@ -69,8 +69,6 @@ def tkinter_display(the_message):
 def file_select():
 
     dataset_path = askopenfilename()
-    dataset_import = pd.read_excel(dataset_path)
-    (NOW ADD THINGS TO GRAB PATHS FROM EXCEL)
 
     tkinter_display('Scroll down for status updates.')
     tkinter_display('The script is running...')
@@ -100,24 +98,7 @@ def file_select():
         initialize_results = tkinter_functions_conn.recv()
         identified_pii, restricted_vars = initialize_results[0], initialize_results[1]
 
-        ### Stemming of restricted list ###
-        p_stemming_rl = Process(target=PII_data_processor.stem_restricted, args=(restricted_vars, datap_functions_conn, datap_messages_conn))
-        p_stemming_rl.start()
-
-        tkinter_display(tkinter_messages_conn.recv())
-
-        time.sleep(2)
-
-        stemming_rl_results = tkinter_functions_conn.recv()
-        restricted_vars, stemmer = stemming_rl_results[0], stemming_rl_results[1]
-
-        ### Word Match Stemming ###
-        p_wordm_stem = Process(target=PII_data_processor.word_match_stemming, args=(identified_pii, restricted_vars, dataset, stemmer, datap_functions_conn, datap_messages_conn))
-        p_wordm_stem.start()
-
-        tkinter_display(tkinter_messages_conn.recv())
-        tkinter_display(tkinter_messages_conn.recv())
-        identified_pii = tkinter_functions_conn.recv()
+        
 
         ### Fuzzy Partial Stem Match ###
         if sensitivity.get() == "Medium (Default)":
@@ -131,56 +112,36 @@ def file_select():
         elif sensitivity.get() == "Minimum":
             sensitivity_score = 1
 
-        threshold = 0.75 * sensitivity_score/3
-        p_fpsm = Process(target=PII_data_processor.fuzzy_partial_stem_match, args=(identified_pii, restricted_vars, dataset, stemmer, threshold, datap_functions_conn, datap_messages_conn))
-        p_fpsm.start()
+    
 
         tkinter_display(tkinter_messages_conn.recv())
-        tkinter_display(tkinter_messages_conn.recv())
-        identified_pii = tkinter_functions_conn.recv()
-
-        ### Unique Entries Detection ###
-        min_entries_threshold = -1*sensitivity_score/5 + 1.15 #(1: 0.95, 2: 0.75, 3: 0.55, 4: 0.35, 5: 0.15)
-
-        p_uniques = Process(target=PII_data_processor.unique_entries, args=(identified_pii, dataset, min_entries_threshold, datap_functions_conn, datap_messages_conn))
-        p_uniques.start()
-
-        tkinter_display(tkinter_messages_conn.recv())
-        tkinter_display(tkinter_messages_conn.recv())
-        identified_pii = tkinter_functions_conn.recv()
+        
 
         root.after(2000, next_steps(identified_pii, dataset, datap_functions_conn, datap_messages_conn, tkinter_functions_conn, tkinter_messages_conn))
 
 def about():
-    webbrowser.open('https://github.com/PovertyAction/PII_detection/blob/master/README.md#pii_detection') 
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/blob/master/README.md') 
 
 def contact():
-    webbrowser.open('https://github.com/PovertyAction/PII_detection/issues')
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/issues')
 
-def methods():
-    webbrowser.open('https://github.com/PovertyAction/PII_detection/blob/master/README.md#pii_detection')
+def source_credit():
+    webbrowser.open('http://blog.dlib.net/2017/02/high-quality-face-recognition-with-deep.html')
 
 def comparison():
-    webbrowser.open('https://github.com/PovertyAction/PII_detection/blob/master/README.md#pii_detection')
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/blob/master/README.md')
 
 def PII_field_names():
-    webbrowser.open('https://github.com/PovertyAction/PII_detection/blob/fa1325094ecdd085864a58374d9f687181ac09fd/PII_data_processor.py#L115')
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/blob/master/README.md')
 
 def next_steps(identified_pii, dataset, datap_functions_conn, datap_messages_conn, tkinter_functions_conn, tkinter_messages_conn):
     ### Date Detection ###
     p_dates = Process(target=PII_data_processor.date_detection, args=(identified_pii, dataset, datap_functions_conn, datap_messages_conn))
     p_dates.start()
 
-    tkinter_display(tkinter_messages_conn.recv())
-    tkinter_display(tkinter_messages_conn.recv())
-    identified_pii = tkinter_functions_conn.recv()
+    
     identified_pii = set(identified_pii)
     tkinter_display("The following fields appear to be PII: " + str(identified_pii)[1:-1])
-
-    # reviewed_pii, removed_status = review_potential_pii(identified_pii, dataset)
-    # dataset, recoded_fields = recode(dataset)
-    # path, export_status = export(dataset)
-    # log(reviewed_pii, removed_status, recoded_fields, path, export_status)
 
     ### Exit Gracefully ###
     tkinter_display('Processing complete. You can use the menu option to restart or exit.')
@@ -216,11 +177,11 @@ if __name__ == '__main__':
 
     # create more pulldown menus
     helpmenu = Menu(menubar, tearoff=0)
-    helpmenu.add_command(label="About", command=about)
-    helpmenu.add_command(label="- Detection Methods", command=methods)
-    helpmenu.add_command(label="- Comparison with Other Scripts", command=comparison)
-    helpmenu.add_command(label="- PII Field Names", command=PII_field_names)
-    helpmenu.add_command(label="- Data Security", command=PII_field_names)
+    helpmenu.add_command(label="About (v0.1.0)", command=about)
+    helpmenu.add_command(label="- Source", command=source_credit)
+    #helpmenu.add_command(label="- Placeholder", command=comparison)
+    #helpmenu.add_command(label="- Placeholder", command=PII_field_names)
+    #helpmenu.add_command(label="- Placeholder", command=PII_field_names)
     helpmenu.add_separator()
     helpmenu.add_command(label="File Issue on GitHub", command=contact)
     helpmenu.add_separator()
@@ -280,10 +241,10 @@ if __name__ == '__main__':
 
     # Dropdown
 
-    ttk.Label(frame, text="Select Detection Sensitivity:", justify=LEFT, font=("Calibri", 11), style='my.TLabel').pack(anchor='nw', padx=(30,0))
+    #ttk.Label(frame, text="Select Detection Sensitivity:", justify=LEFT, font=("Calibri", 11), style='my.TLabel').pack(anchor='nw', padx=(30,0))
 
-    sensitivity = StringVar(frame)
-    w = ttk.OptionMenu(frame, sensitivity, "Medium (Default)", "Maximum", "High", "Medium (Default)", "Low", "Minimum", style='my.TMenubutton').pack(anchor='nw', padx=(30,0))
+    #sensitivity = StringVar(frame)
+    #w = ttk.OptionMenu(frame, sensitivity, "Medium (Default)", "Maximum", "High", "Medium (Default)", "Low", "Minimum", style='my.TMenubutton').pack(anchor='nw', padx=(30,0))
     # A combobox may be a better choice
     
     # Checkbox
@@ -303,14 +264,3 @@ if __name__ == '__main__':
     # Listener
 
     root.mainloop()  # constantly looping event listener
-
-# Extra code
-
-#     ### Implement this for improvements to formatting
-#     # text = tk.Text(frame, height=1, font="Helvetica 12")
-#     # text.tag_configure("bold", font="Helvetica 12 bold")
-
-#     # text.insert("end", the_message)
-#     # text.insert("end", "world", "bold")
-#     # text.configure(state="disabled")
-#     # text.pack()
