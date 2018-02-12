@@ -47,12 +47,26 @@ else:
 
 facerec = dlib.face_recognition_model_v1(face_rec_model_path)
 
-def read_files(path_to_excel):
-    #file_pairings = pd.read_excel('Filenames.xlsx')
-    file_pairings = pd.read_excel('../../../demo_faces/demo_filename_pairings.xlsx')
-    #images_directory_path = '/images/'
-    images_directory_path = '../../../demo_faces/'
+def smart_print(the_message, messages_pipe = None):
+    if __name__ == "__main__":
+        print(the_message)
+    else:
+        messages_pipe.send(the_message)
 
+def smart_return(to_return, function_pipe = None):
+    if __name__ != "__main__":
+        function_pipe.send(to_return)
+    else:
+        if len(to_return) == 2:
+            return to_return[0], to_return[1]
+        else:
+            return to_return
+
+def read_files(arguments_conn):
+    #file_pairings = pd.read_excel('Filenames.xlsx')
+    dataset_path = arguments_conn.recv()
+    dataset_path_l = dataset_path.lower()
+    
     raise_error = False
     status_message = False
 
@@ -80,6 +94,12 @@ def read_files(path_to_excel):
             status_message = '**ERROR**: This path appears to be invalid. If your folders or filename contain colons or commas, try renaming them or moving the file to a different location.'
         smart_print(status_message, messages_pipe)
         raise
+
+    # Parse pandas dataframe for these
+    file_pairings = pd.read_excel('../../../demo_faces/demo_filename_pairings.xlsx')
+    #images_directory_path = '/images/'
+    images_directory_path = '../../../demo_faces/'
+
 
     status_message = '**SUCCESS**: The dataset has been read successfully.'
     smart_print(status_message, messages_pipe)
@@ -183,23 +203,9 @@ def read_files(path_to_excel):
         file_pairings['Same Person: Percentage Test'][lowest_valid_value_index:percent_index_highest_valid] = 1
         file_pairings['Same Person: Percentage Test'][percent_index_highest_valid:] = 0
     
-    return file_pairings
+    file_pairings.to_csv('results.csv')
 
 
-def smart_print(the_message, messages_pipe = None):
-    if __name__ == "__main__":
-        print(the_message)
-    else:
-        messages_pipe.send(the_message)
-
-def smart_return(to_return, function_pipe = None):
-    if __name__ != "__main__":
-        function_pipe.send(to_return)
-    else:
-        if len(to_return) == 2:
-            return to_return[0], to_return[1]
-        else:
-            return to_return
 
 
 

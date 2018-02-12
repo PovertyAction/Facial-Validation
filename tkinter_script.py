@@ -4,7 +4,6 @@ from tkinter.filedialog import askopenfilename
 import tkinter
 from tkinter import ttk
 import tkinter.scrolledtext as tkst
-from nltk.stem.porter import *
 import time
 from datetime import datetime
 from multiprocessing import Process, Pipe
@@ -86,38 +85,38 @@ def file_select():
 
         #tkinter_display(tkinter_messages_conn.recv())
 
-        import_results = tkinter_functions_conn.recv()  # dataset, dataset_path, label_dict, value_label_dict
-        dataset = import_results[0]
-        dataset_path = import_results[1]
+        #import_results = tkinter_functions_conn.recv()  # dataset, dataset_path, label_dict, value_label_dict
+        #dataset = import_results[0]
+        #dataset_path = import_results[1]
 
         
-        ### Initialization of lists ###
-        p_initialize_vars = Process(target=PII_data_processor.initialize_lists, args=(datap_functions_conn, ))
-        p_initialize_vars.start()
+        ### Main function call ###
+        p_initialize = Process(target=fv_processor.read_files, args=(datap_functions_conn, ))
+        p_initialize.start()
 
-        initialize_results = tkinter_functions_conn.recv()
-        identified_pii, restricted_vars = initialize_results[0], initialize_results[1]
+        #initialize_results = tkinter_functions_conn.recv()
+        #identified_pii, restricted_vars = initialize_results[0], initialize_results[1]
 
         
 
         ### Fuzzy Partial Stem Match ###
-        if sensitivity.get() == "Medium (Default)":
-            sensitivity_score = 3
-        elif sensitivity.get() == "Maximum":
-            sensitivity_score = 5
-        elif sensitivity.get() == "High":
-            sensitivity_score = 4
-        elif sensitivity.get() == "Low":
-            sensitivity_score = 2
-        elif sensitivity.get() == "Minimum":
-            sensitivity_score = 1
+        #if sensitivity.get() == "Medium (Default)":
+        #    sensitivity_score = 3
+        #elif sensitivity.get() == "Maximum":
+        #    sensitivity_score = 5
+        #elif sensitivity.get() == "High":
+        #    sensitivity_score = 4
+        #elif sensitivity.get() == "Low":
+        #    sensitivity_score = 2
+        #elif sensitivity.get() == "Minimum":
+        #    sensitivity_score = 1
 
     
 
-        tkinter_display(tkinter_messages_conn.recv())
+        #tkinter_display(tkinter_messages_conn.recv())
         
 
-        root.after(2000, next_steps(identified_pii, dataset, datap_functions_conn, datap_messages_conn, tkinter_functions_conn, tkinter_messages_conn))
+        #root.after(2000, next_steps(identified_pii, dataset, datap_functions_conn, datap_messages_conn, tkinter_functions_conn, tkinter_messages_conn))
 
 def about():
     webbrowser.open('https://github.com/PovertyAction/Facial-Validation/blob/master/README.md') 
