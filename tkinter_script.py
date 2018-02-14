@@ -139,8 +139,7 @@ def next_steps(identified_pii, dataset, datap_functions_conn, datap_messages_con
     p_dates.start()
 
     
-    identified_pii = set(identified_pii)
-    tkinter_display("The following fields appear to be PII: " + str(identified_pii)[1:-1])
+    tkinter_display("The results have been exported to: " + str(identified_pii)[1:-1])
 
     ### Exit Gracefully ###
     tkinter_display('Processing complete. You can use the menu option to restart or exit.')
