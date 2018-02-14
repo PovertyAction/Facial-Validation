@@ -91,8 +91,10 @@ def file_select():
 
         
         ### Main function call ###
-        p_initialize = Process(target=fv_processor.read_files, args=(datap_functions_conn, ))
+        p_initialize = Process(target=fv_processor.read_files, args=(datap_functions_conn, datap_messages_conn))
         p_initialize.start()
+
+        tkinter_display(tkinter_messages_conn.recv())
 
         #initialize_results = tkinter_functions_conn.recv()
         #identified_pii, restricted_vars = initialize_results[0], initialize_results[1]

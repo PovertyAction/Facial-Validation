@@ -62,9 +62,9 @@ def smart_return(to_return, function_pipe = None):
         else:
             return to_return
 
-def read_files(arguments_conn):
+def read_files(arguments_pipe, messages_pipe):
     #file_pairings = pd.read_excel('Filenames.xlsx')
-    dataset_path = arguments_conn.recv()
+    dataset_path = arguments_pipe.recv()
     dataset_path_l = dataset_path.lower()
     
     raise_error = False
@@ -96,13 +96,40 @@ def read_files(arguments_conn):
         raise
 
     # Parse pandas dataframe for these
-    file_pairings = pd.read_excel('../../../demo_faces/demo_filename_pairings.xlsx')
-    #images_directory_path = '/images/'
-    images_directory_path = '../../../demo_faces/'
+    file_pairing_path = dataset.iloc[0,1]
+    images_directory_path = dataset.iloc[1,1]
 
+    try:
+        if dataset_path_l.endswith(('xlsx', 'xls')):
+            file_pairings = pd.read_excel(file_pairing_path)
+        elif dataset_path_l.endswith('csv'):
+            file_pairings = pd.read_csv(file_pairing_path)
+        elif dataset_path_l.endswith('dta'):
+            try:
+                file_pairings = pd.read_stata(file_pairing_path)
+            except ValueError:
+                file_pairings = pd.read_stata(file_pairing_path, convert_categoricals=False)
+        elif dataset_path_l.endswith('vc'):
+            status_message = "**ERROR**: This folder appears to be encrypted using VeraCrypt."
+            raise Exception
+        elif dataset_path_l.endswith('bc'):
+            status_message = "**ERROR**: This file appears to be encrypted using Boxcryptor. Sign in to Boxcryptor and then select the file in your X: drive."
+            raise Exception
+        else:
+            raise Exception
+
+    except (FileNotFoundError, Exception):
+        if status_message is False:
+            status_message = '**ERROR**: This path appears to be invalid. If your folders or filename contain colons or commas, try renaming them or moving the file to a different location.'
+        #smart_print(status_message, messages_pipe)
+        raise
+
+    print("Got before success message")
 
     status_message = '**SUCCESS**: The dataset has been read successfully.'
     smart_print(status_message, messages_pipe)
+
+    print("Got after success message")
 
     # Precision parameter (lower number = faster runtime, less accuracy; speed of 1 -> 99.13% accuracy, 100 -> 99.38%)
     speed = 1
@@ -169,6 +196,8 @@ def read_files(arguments_conn):
             if file_pairings['Img1 Processed?'][row_index] == 1 and file_pairings['Img2 Processed?'][row_index] == 1:
                 file_pairings['Match Score'][row_index] = euclidean_distances(file_pairings['Img1 Vector'][row_index], file_pairings['Img2 Vector'][row_index])[0][0]
 
+    threshold = 0
+    percentage = 0
     # Flagging calculated scores that exceed Euclidean distance threshold
     if threshold != 0: # pass threshold = 0 to skip test
         file_pairings['Same Person: Threshold Test'] = ''

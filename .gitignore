@@ -102,3 +102,4 @@ ENV/
 *.ipynb
 
 Dlib Implementation.ipynb
+results.csv
