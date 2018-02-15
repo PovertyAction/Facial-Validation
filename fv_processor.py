@@ -26,6 +26,8 @@ from sklearn.metrics.pairwise import euclidean_distances
 import pandas as pd
 from tqdm import tqdm #Optional, for tracking progress of for loop
 import time
+import warnings
+warnings.filterwarnings("ignore")
 
 # Set-up of parameters
 ## Facial detection
@@ -124,12 +126,8 @@ def read_files(arguments_pipe, messages_pipe):
         #smart_print(status_message, messages_pipe)
         raise
 
-    print("Got before success message")
-
     status_message = '**SUCCESS**: The dataset has been read successfully.'
     smart_print(status_message, messages_pipe)
-
-    print("Got after success message")
 
     # Precision parameter (lower number = faster runtime, less accuracy; speed of 1 -> 99.13% accuracy, 100 -> 99.38%)
     speed = 1
@@ -196,7 +194,7 @@ def read_files(arguments_pipe, messages_pipe):
             if file_pairings['Img1 Processed?'][row_index] == 1 and file_pairings['Img2 Processed?'][row_index] == 1:
                 file_pairings['Match Score'][row_index] = euclidean_distances(file_pairings['Img1 Vector'][row_index], file_pairings['Img2 Vector'][row_index])[0][0]
 
-    threshold = 0
+    threshold = 0.6 # Recommended accuracy from developers of model.
     percentage = 0
     # Flagging calculated scores that exceed Euclidean distance threshold
     if threshold != 0: # pass threshold = 0 to skip test
@@ -233,25 +231,3 @@ def read_files(arguments_pipe, messages_pipe):
         file_pairings['Same Person: Percentage Test'][percent_index_highest_valid:] = 0
     
     file_pairings.to_csv('results.csv')
-
-
-
-
-
-# def export(dataset):
-#     csv_path = None
-#     exported = False
-    
-#     try:
-#         Label(frame, text='Recoding').pack()
-    
-#     except NameError:# Option for exporting deidentified dataset
-#         exported = False
-#         if input('Would you like to export the deidentified dataset to csv? (Your original dataset will be preserved.)  ') in yes_strings:
-#             csv_path = dataset_path.split('.')[0] + '_deidentified.csv'
-#             #stata_path = dataset_path.split('.')[0] + '_deidentified.dta'
-#             dataset.to_csv(csv_path)
-#             #dataset.to_stata(stata_path)
-#             exported = True
-            
-#     return csv_path, exported
