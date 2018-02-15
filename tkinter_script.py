@@ -14,10 +14,10 @@ from PIL import ImageTk, Image
 import webbrowser
 import pandas as pd
 
-intro_text = "This script detects whether two pictures are of the same person. It may be used to help ensure the same person is being interviewed between waves, to detect when someone enrolls more than once in a program, or any other use."
-intro_text_p2 = "Though this tool can be helpful, ensuring identity is ultimately still your responsibility."
-intro_text_p3 = "*This version is customized for Windows 7. It has limited functionality. It is recommended you use the versions for Windows 10, OSX, or Linux if possible."
-app_title = "IPA's Facial Validator - Windows 7*"
+intro_text = "This script detects whether listings of paired pictures are of the same person. It is most often used to help ensure the same person is being interviewed across waves or to detect when someone enrolls more than once in a program."
+intro_text_p2 = "To use this tool you must create an input file according to the template (see help menu). The results will then be output as 'results.csv' to the directory containing your images. Any file with the same name located there will be overwritten. A '1' on the threshold test denotes that the person in the images is the same, while a '0' indicates that they appear not to be."
+intro_text_p3 = "Though this tool can be helpful, ensuring identity is ultimately still your responsibility."
+app_title = "IPA's Facial Validator for Windows"
 
 
 class GUI:
@@ -70,7 +70,7 @@ def file_select():
     dataset_path = askopenfilename()
 
     tkinter_display('Scroll down for status updates.')
-    tkinter_display('The script is running...')
+    tkinter_display('Processing...')
 
     if __name__ == '__main__':
 
@@ -95,30 +95,12 @@ def file_select():
         p_initialize.start()
 
         tkinter_display(tkinter_messages_conn.recv())
+        tkinter_display(tkinter_messages_conn.recv())
+        tkinter_display(tkinter_messages_conn.recv())
+        tkinter_display(tkinter_messages_conn.recv())
 
-        #initialize_results = tkinter_functions_conn.recv()
-        #identified_pii, restricted_vars = initialize_results[0], initialize_results[1]
-
-        
-
-        ### Fuzzy Partial Stem Match ###
-        #if sensitivity.get() == "Medium (Default)":
-        #    sensitivity_score = 3
-        #elif sensitivity.get() == "Maximum":
-        #    sensitivity_score = 5
-        #elif sensitivity.get() == "High":
-        #    sensitivity_score = 4
-        #elif sensitivity.get() == "Low":
-        #    sensitivity_score = 2
-        #elif sensitivity.get() == "Minimum":
-        #    sensitivity_score = 1
-
-    
-
-        #tkinter_display(tkinter_messages_conn.recv())
-        
-
-        #root.after(2000, next_steps(identified_pii, dataset, datap_functions_conn, datap_messages_conn, tkinter_functions_conn, tkinter_messages_conn))
+        ### Exit Gracefully ###
+        tkinter_display('You can use the file menu to restart or exit.')
 
 def about():
     webbrowser.open('https://github.com/PovertyAction/Facial-Validation/blob/master/README.md') 
@@ -129,22 +111,17 @@ def contact():
 def source_credit():
     webbrowser.open('http://blog.dlib.net/2017/02/high-quality-face-recognition-with-deep.html')
 
+def template():
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/raw/master/input_template.xlsx')
+
+def csv_template():
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/raw/master/input_template.csv')
+
 def comparison():
     webbrowser.open('https://github.com/PovertyAction/Facial-Validation/blob/master/README.md')
 
 def PII_field_names():
     webbrowser.open('https://github.com/PovertyAction/Facial-Validation/blob/master/README.md')
-
-def next_steps(identified_pii, dataset, datap_functions_conn, datap_messages_conn, tkinter_functions_conn, tkinter_messages_conn):
-    ### Date Detection ###
-    p_dates = Process(target=PII_data_processor.date_detection, args=(identified_pii, dataset, datap_functions_conn, datap_messages_conn))
-    p_dates.start()
-
-    
-    tkinter_display("The results have been exported to: " + str(identified_pii)[1:-1])
-
-    ### Exit Gracefully ###
-    tkinter_display('Processing complete. You can use the menu option to restart or exit.')
 
 def restart_program():
     """Restarts the current program.
@@ -178,8 +155,9 @@ if __name__ == '__main__':
     # create more pulldown menus
     helpmenu = Menu(menubar, tearoff=0)
     helpmenu.add_command(label="About (v0.1.0)", command=about)
+    helpmenu.add_command(label="- Excel Template", command=template)
+    helpmenu.add_command(label="- Csv Template", command=csv_template)
     helpmenu.add_command(label="- Source", command=source_credit)
-    #helpmenu.add_command(label="- Placeholder", command=comparison)
     #helpmenu.add_command(label="- Placeholder", command=PII_field_names)
     #helpmenu.add_command(label="- Placeholder", command=PII_field_names)
     helpmenu.add_separator()
@@ -235,9 +213,9 @@ if __name__ == '__main__':
     ttk.Label(frame, text=intro_text_p3, wraplength=546, justify=LEFT, font=("Calibri", 11), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 30))
 
     ttk.Label(frame, text="Start Application: ", wraplength=546, justify=LEFT, font=("Calibri", 12, 'bold'), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 10))
-    ttk.Button(frame, text="Select Input Sheet", command=file_select, style='my.TButton').pack(anchor='nw', padx=(30, 30), pady=(0, 30))
+    ttk.Button(frame, text="Select Input File", command=file_select, style='my.TButton').pack(anchor='nw', padx=(30, 30), pady=(0, 30))
 
-    ttk.Label(frame, text="Options:", justify=LEFT, font=("Calibri", 12, 'bold'), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 10))
+    #ttk.Label(frame, text="Options:", justify=LEFT, font=("Calibri", 12, 'bold'), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 10))
 
     # Dropdown
 

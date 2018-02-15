@@ -104,9 +104,9 @@ def read_files(arguments_pipe, messages_pipe):
     file_pairings = file_pairings.reset_index(drop=True)
 
     status_message = '**SUCCESS**: The template has been read successfully.'
+    smart_print(status_message, messages_pipe)
 
-
-    status_message = '**SUCCESS**: The dataset has been read successfully.'
+    status_message = 'Analyzing images...'
     smart_print(status_message, messages_pipe)
 
     # Precision parameter (lower number = faster runtime, less accuracy; speed of 1 -> 99.13% accuracy, 100 -> 99.38%)
@@ -174,6 +174,9 @@ def read_files(arguments_pipe, messages_pipe):
             if file_pairings['Img1 Processed?'][row_index] == 1 and file_pairings['Img2 Processed?'][row_index] == 1:
                 file_pairings['Match Score'][row_index] = euclidean_distances(file_pairings['Img1 Vector'][row_index], file_pairings['Img2 Vector'][row_index])[0][0]
 
+    status_message = 'Images processed, results being calculated...'
+    smart_print(status_message, messages_pipe)
+
     threshold = 0.6 # Recommended accuracy from developers of model.
     percentage = 0
     # Flagging calculated scores that exceed Euclidean distance threshold
@@ -210,4 +213,7 @@ def read_files(arguments_pipe, messages_pipe):
         file_pairings['Same Person: Percentage Test'][lowest_valid_value_index:percent_index_highest_valid] = 1
         file_pairings['Same Person: Percentage Test'][percent_index_highest_valid:] = 0
     
-    file_pairings.to_csv('results.csv', index=False)
+    file_pairings.to_csv(images_directory_path + 'results.csv', index=False)
+
+    status_message = "Application finished. Results of analysis have been output to: " + images_directory_path + 'results.csv'
+    smart_print(status_message, messages_pipe)
