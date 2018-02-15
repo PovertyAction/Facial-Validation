@@ -14,8 +14,8 @@ from PIL import ImageTk, Image
 import webbrowser
 import pandas as pd
 
-intro_text = "This script detects whether listings of paired pictures are of the same person. It is most often used to help ensure the same person is being interviewed across waves or to detect when someone enrolls more than once in a program. Though this tool can be helpful, ensuring identity is ultimately still your responsibility."
-intro_text_p2 = "To use this tool you must create an input file according to the template (see help menu). The results will then be output as 'results.csv' to the directory containing your images. Any file with the same name located there will be overwritten. A '1' on the threshold test denotes that the person in the images is the same, while a '0' indicates that they appear not to be."
+intro_text = "This application detects whether listings of paired pictures are of the same person. It is most often used to help ensure the same person is being interviewed across waves or to detect when someone enrolls more than once in a program. Though this tool can be helpful, ensuring identity is ultimately still your responsibility."
+intro_text_p2 = "To use this application you must create an input file according to the template (see help menu). The results will then be output as 'results.csv' to the directory containing your images. Any file with the same name located there will be overwritten. A '1' on the threshold test denotes that the person in the images is the same, while a '0' indicates that they appear not to be."
 intro_text_p3 = "You can help make this tool better, or have it customizatized to your needs, by working with GRDS on your upcoming project that involves participant photos."
 app_title = "IPA's Facial Validator for Windows"
 
@@ -79,10 +79,10 @@ def template():
     webbrowser.open('https://github.com/PovertyAction/Facial-Validation/raw/master/input_template.xlsx')
 
 def csv_template():
-    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/raw/master/input_template.csv')
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/blob/master/input_template.csv')
 
 def photo_guidelines():
-    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/raw/master/input_template.xlsx')
+    webbrowser.open(r'https://github.com/PovertyAction/Facial-Validation/blob/master/Photography%20Guidelines%20for%20Facial%20Validation.pdf')
 
 def comparison():
     webbrowser.open('https://github.com/PovertyAction/Facial-Validation/blob/master/README.md')
