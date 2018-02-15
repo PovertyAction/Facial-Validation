@@ -11,7 +11,11 @@ You can help make this tool better, or have it customized to your needs, by work
 1. Take photographs of participants in line with [the guidelines](https://github.com/PovertyAction/Facial-Validation/blob/master/Photography%20Guidelines%20for%20Facial%20Validation.pdf).
 - The best way to ensure success is to train enumerators, pilot field photography and data collection, and work with GRDS to ensure the pictures collected during pilot are able to be successfully analyzed by the tool. GRDS can also continue to monitor photo quality throughout data collection. 
 
-2. Prepare [the input template]().
+2. Place all images in a single folder on your machine and prepare [the input template](https://github.com/PovertyAction/Facial-Validation/blob/master/input_template.xlsx). You'll provide the path to the directory containing the images, and paired image filenames to compare.
+
+3. Download the application from the latest [release](https://github.com/PovertyAction/Facial-Validation/releases). Run the application and follow the instructions to upload the input template.
+
+4. Examine the output file, results.csv in the folder containing the images. A '1' on the threshold test denotes that the person in the image pair is the same, while a '0' indicates that they appear not to be.
 
 ### Help and Support
 Please check the issues section on GitHub for previously solved issues. If no solution is available there feel free to open an issue; the author will attempt to respond in a reasonably timely fashion. If your request is urgent you may contact researchsupport@poverty-action.org
