@@ -1,5 +1,5 @@
-﻿Directory Needed,Path of Directory (i.e. C:\faces\),,,,,,,,,
-Image Directory,C:\Users\Jjacobson\Documents\Dropbox\Work-Personal Sync\Falsification\Scripts\Sourced\facial recognition\Facial-Validation\demo_faces\,,,,,,,,,
+Directory Needed,Path of Directory (i.e. C:\demo_faces\),,,,,,,,,
+Image Directory,C:\demo_faces\,,,,,,,,,
 ,,,,,,,,,,
 Image 1,Image 2,"Input the directory containing images, and the names of the image files, where indicated. The directory path must be in cell B2, while the image filenames must begin in row 5 and be in columns A and B. The list of images can be as long as desired.",,,,,,,,
 kyi1.jpg,freeman1.jpg,,,,,,,,,
