@@ -98,33 +98,13 @@ def read_files(arguments_pipe, messages_pipe):
         raise
 
     # Parse pandas dataframe for these
-    file_pairing_path = dataset.iloc[0,1]
-    images_directory_path = dataset.iloc[1,1]
+    images_directory_path = dataset.iloc[0,1]
+    file_pairings = dataset.iloc[3:,:2]
+    file_pairings.columns = dataset.iloc[2,:2]
+    file_pairings = file_pairings.reset_index(drop=True)
 
-    try:
-        if dataset_path_l.endswith(('xlsx', 'xls')):
-            file_pairings = pd.read_excel(file_pairing_path)
-        elif dataset_path_l.endswith('csv'):
-            file_pairings = pd.read_csv(file_pairing_path)
-        elif dataset_path_l.endswith('dta'):
-            try:
-                file_pairings = pd.read_stata(file_pairing_path)
-            except ValueError:
-                file_pairings = pd.read_stata(file_pairing_path, convert_categoricals=False)
-        elif dataset_path_l.endswith('vc'):
-            status_message = "**ERROR**: This folder appears to be encrypted using VeraCrypt."
-            raise Exception
-        elif dataset_path_l.endswith('bc'):
-            status_message = "**ERROR**: This file appears to be encrypted using Boxcryptor. Sign in to Boxcryptor and then select the file in your X: drive."
-            raise Exception
-        else:
-            raise Exception
+    status_message = '**SUCCESS**: The template has been read successfully.'
 
-    except (FileNotFoundError, Exception):
-        if status_message is False:
-            status_message = '**ERROR**: This path appears to be invalid. If your folders or filename contain colons or commas, try renaming them or moving the file to a different location.'
-        #smart_print(status_message, messages_pipe)
-        raise
 
     status_message = '**SUCCESS**: The dataset has been read successfully.'
     smart_print(status_message, messages_pipe)
@@ -230,4 +210,4 @@ def read_files(arguments_pipe, messages_pipe):
         file_pairings['Same Person: Percentage Test'][lowest_valid_value_index:percent_index_highest_valid] = 1
         file_pairings['Same Person: Percentage Test'][percent_index_highest_valid:] = 0
     
-    file_pairings.to_csv('results.csv')
+    file_pairings.to_csv('results.csv', index=False)
