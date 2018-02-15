@@ -101,6 +101,15 @@ def read_files(arguments_pipe, messages_pipe):
     file_pairings.columns = dataset.iloc[2,:2]
     file_pairings = file_pairings.reset_index(drop=True)
 
+    if images_directory_path.endswith(('"', "'")):
+        images_directory_path = images_directory_path[1:-1] 
+
+    if not images_directory_path.endswith(('/', "\\")):
+        if '/' in images_directory_path:
+            images_directory_path = images_directory_path + '/'
+        elif '\\' in images_directory_path:
+            images_directory_path = images_directory_path + '\\'
+
     status_message = '**SUCCESS**: The template has been read successfully.'
     smart_print(status_message, messages_pipe)
 

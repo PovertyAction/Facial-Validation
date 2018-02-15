@@ -103,3 +103,4 @@ ENV/
 
 Dlib Implementation.ipynb
 results.csv
+*.ini
