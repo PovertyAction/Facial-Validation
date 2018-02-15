@@ -4,7 +4,6 @@ from tkinter.filedialog import askopenfilename
 import tkinter
 from tkinter import ttk
 import tkinter.scrolledtext as tkst
-from nltk.stem.porter import *
 import time
 from datetime import datetime
 from multiprocessing import Process, Pipe
@@ -15,16 +14,15 @@ from PIL import ImageTk, Image
 import webbrowser
 import pandas as pd
 
-intro_text = "This script is meant to assist in the detection of PII (personally identifiable information) and subsequent removal from a dataset."
-intro_text_p2 = "Ensuring the dataset is devoid of PII is ultimately still your responsibility. Be careful with potential identifiers, especially geographic, because they can sometimes be combined with other variables to become identifying."
-intro_text_p3 = "*This version is customized for Windows 7. It has limited functionality. It is recommended you use the versions for Windows 10, OSX, or Linux if possible."
-app_title = "IPA's PII Detector, Cleaner, and Recoder - Windows 7*"
+intro_text = "This script detects whether listings of paired pictures are of the same person. It is most often used to help ensure the same person is being interviewed across waves or to detect when someone enrolls more than once in a program. Though this tool can be helpful, ensuring identity is ultimately still your responsibility."
+intro_text_p2 = "To use this tool you must create an input file according to the template (see help menu). The results will then be output as 'results.csv' to the directory containing your images. Any file with the same name located there will be overwritten. A '1' on the threshold test denotes that the person in the images is the same, while a '0' indicates that they appear not to be."
+intro_text_p3 = "You can help make this tool better, or have it customizatized to your needs, by working with GRDS on your upcoming project that involves participant photos."
+app_title = "IPA's Facial Validator for Windows"
 
 
 class GUI:
     def __init__(self, master):
         self.master = master
-        # master.frame(self, borderwidth=4)
         master.title(app_title)
         
         if hasattr(sys, "_MEIPASS"):
@@ -35,31 +33,6 @@ class GUI:
         master.iconbitmap(icon_location)
         master.minsize(width=686, height=666)
 
-def input(the_message):
-    try:
-        ttk.Label(frame, text=the_message, wraplength=546, justify=LEFT, font=("Calibri", 11), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 12))
-
-        def evaluate(event=None):
-            pass
-
-            #if entry.get() in ['y', 'yes']:
-            #    return True
-            #res.configure(text="Ergebnis: " + )
-
-    except:  # ## add specific Jupyter error here
-        pass
-
-    Label(frame, text="Your Expression:").pack()
-    entry = Entry(frame)
-    entry.bind("<Return>", evaluate)
-    if ttk.Button(frame, text="Submit", command=evaluate, style='my.TButton').pack() is True:
-        return True
-    entry.pack()
-    time.sleep(8)
-    res = Label(frame)
-    res.pack()
-    return ('No')
-
 
 def tkinter_display(the_message):
     the_message = datetime.now().strftime("%H:%M:%S") + '     ' + the_message
@@ -69,121 +42,50 @@ def tkinter_display(the_message):
 def file_select():
 
     dataset_path = askopenfilename()
-    dataset_import = pd.read_excel(dataset_path)
-    (NOW ADD THINGS TO GRAB PATHS FROM EXCEL)
 
     tkinter_display('Scroll down for status updates.')
-    tkinter_display('The script is running...')
+    tkinter_display('Processing...')
 
     if __name__ == '__main__':
 
         tkinter_functions_conn, datap_functions_conn = Pipe()
         tkinter_messages_conn, datap_messages_conn = Pipe()
 
-        ### Importing dataset and printing messages ###
+        ### Sending dataset path into Pipe for processor file ###
         tkinter_functions_conn.send(dataset_path)
-
-        #p_import = Process(target=PII_data_processor.import_dataset, args=(datap_functions_conn, datap_messages_conn))
-        #p_import.start()
-
-        #tkinter_display(tkinter_messages_conn.recv())
-
-        import_results = tkinter_functions_conn.recv()  # dataset, dataset_path, label_dict, value_label_dict
-        dataset = import_results[0]
-        dataset_path = import_results[1]
-
         
-        ### Initialization of lists ###
-        p_initialize_vars = Process(target=PII_data_processor.initialize_lists, args=(datap_functions_conn, ))
-        p_initialize_vars.start()
-
-        initialize_results = tkinter_functions_conn.recv()
-        identified_pii, restricted_vars = initialize_results[0], initialize_results[1]
-
-        ### Stemming of restricted list ###
-        p_stemming_rl = Process(target=PII_data_processor.stem_restricted, args=(restricted_vars, datap_functions_conn, datap_messages_conn))
-        p_stemming_rl.start()
-
-        tkinter_display(tkinter_messages_conn.recv())
-
-        time.sleep(2)
-
-        stemming_rl_results = tkinter_functions_conn.recv()
-        restricted_vars, stemmer = stemming_rl_results[0], stemming_rl_results[1]
-
-        ### Word Match Stemming ###
-        p_wordm_stem = Process(target=PII_data_processor.word_match_stemming, args=(identified_pii, restricted_vars, dataset, stemmer, datap_functions_conn, datap_messages_conn))
-        p_wordm_stem.start()
+        ### Main function call ###
+        p_initialize = Process(target=fv_processor.read_files, args=(datap_functions_conn, datap_messages_conn))
+        p_initialize.start()
 
         tkinter_display(tkinter_messages_conn.recv())
         tkinter_display(tkinter_messages_conn.recv())
-        identified_pii = tkinter_functions_conn.recv()
-
-        ### Fuzzy Partial Stem Match ###
-        if sensitivity.get() == "Medium (Default)":
-            sensitivity_score = 3
-        elif sensitivity.get() == "Maximum":
-            sensitivity_score = 5
-        elif sensitivity.get() == "High":
-            sensitivity_score = 4
-        elif sensitivity.get() == "Low":
-            sensitivity_score = 2
-        elif sensitivity.get() == "Minimum":
-            sensitivity_score = 1
-
-        threshold = 0.75 * sensitivity_score/3
-        p_fpsm = Process(target=PII_data_processor.fuzzy_partial_stem_match, args=(identified_pii, restricted_vars, dataset, stemmer, threshold, datap_functions_conn, datap_messages_conn))
-        p_fpsm.start()
-
         tkinter_display(tkinter_messages_conn.recv())
         tkinter_display(tkinter_messages_conn.recv())
-        identified_pii = tkinter_functions_conn.recv()
 
-        ### Unique Entries Detection ###
-        min_entries_threshold = -1*sensitivity_score/5 + 1.15 #(1: 0.95, 2: 0.75, 3: 0.55, 4: 0.35, 5: 0.15)
-
-        p_uniques = Process(target=PII_data_processor.unique_entries, args=(identified_pii, dataset, min_entries_threshold, datap_functions_conn, datap_messages_conn))
-        p_uniques.start()
-
-        tkinter_display(tkinter_messages_conn.recv())
-        tkinter_display(tkinter_messages_conn.recv())
-        identified_pii = tkinter_functions_conn.recv()
-
-        root.after(2000, next_steps(identified_pii, dataset, datap_functions_conn, datap_messages_conn, tkinter_functions_conn, tkinter_messages_conn))
+        ### Exit Gracefully ###
+        tkinter_display('You can use the file menu to restart or exit.')
 
 def about():
-    webbrowser.open('https://github.com/PovertyAction/PII_detection/blob/master/README.md#pii_detection') 
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/blob/master/README.md') 
 
 def contact():
-    webbrowser.open('https://github.com/PovertyAction/PII_detection/issues')
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/issues')
 
-def methods():
-    webbrowser.open('https://github.com/PovertyAction/PII_detection/blob/master/README.md#pii_detection')
+def source_credit():
+    webbrowser.open('http://blog.dlib.net/2017/02/high-quality-face-recognition-with-deep.html')
+
+def template():
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/raw/master/input_template.xlsx')
+
+def csv_template():
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/raw/master/input_template.csv')
+
+def photo_guidelines():
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/raw/master/input_template.xlsx')
 
 def comparison():
-    webbrowser.open('https://github.com/PovertyAction/PII_detection/blob/master/README.md#pii_detection')
-
-def PII_field_names():
-    webbrowser.open('https://github.com/PovertyAction/PII_detection/blob/fa1325094ecdd085864a58374d9f687181ac09fd/PII_data_processor.py#L115')
-
-def next_steps(identified_pii, dataset, datap_functions_conn, datap_messages_conn, tkinter_functions_conn, tkinter_messages_conn):
-    ### Date Detection ###
-    p_dates = Process(target=PII_data_processor.date_detection, args=(identified_pii, dataset, datap_functions_conn, datap_messages_conn))
-    p_dates.start()
-
-    tkinter_display(tkinter_messages_conn.recv())
-    tkinter_display(tkinter_messages_conn.recv())
-    identified_pii = tkinter_functions_conn.recv()
-    identified_pii = set(identified_pii)
-    tkinter_display("The following fields appear to be PII: " + str(identified_pii)[1:-1])
-
-    # reviewed_pii, removed_status = review_potential_pii(identified_pii, dataset)
-    # dataset, recoded_fields = recode(dataset)
-    # path, export_status = export(dataset)
-    # log(reviewed_pii, removed_status, recoded_fields, path, export_status)
-
-    ### Exit Gracefully ###
-    tkinter_display('Processing complete. You can use the menu option to restart or exit.')
+    webbrowser.open('https://github.com/PovertyAction/Facial-Validation/blob/master/README.md')
 
 def restart_program():
     """Restarts the current program.
@@ -216,12 +118,12 @@ if __name__ == '__main__':
 
     # create more pulldown menus
     helpmenu = Menu(menubar, tearoff=0)
-    helpmenu.add_command(label="About", command=about)
-    helpmenu.add_command(label="- Detection Methods", command=methods)
-    helpmenu.add_command(label="- Comparison with Other Scripts", command=comparison)
-    helpmenu.add_command(label="- PII Field Names", command=PII_field_names)
-    helpmenu.add_command(label="- Data Security", command=PII_field_names)
+    helpmenu.add_command(label="About (v0.1.0)", command=about)
+    helpmenu.add_command(label="- Excel Template", command=template)
+    helpmenu.add_command(label="- Csv Template", command=csv_template)
+    helpmenu.add_command(label="- Source", command=source_credit)
     helpmenu.add_separator()
+    helpmenu.add_command(label="Photography Guidelines", command=photo_guidelines)
     helpmenu.add_command(label="File Issue on GitHub", command=contact)
     helpmenu.add_separator()
     helpmenu.add_command(label="Contribute", command=contact)
@@ -246,8 +148,6 @@ if __name__ == '__main__':
     canvas = Canvas(root)
     frame = Frame(canvas, width=606, height=636, bg="white")
     frame.place(x=30, y=30)
-    #frame.pack_propagate(False)
-    #frame.pack()
 
     vsb = Scrollbar(root, orient="vertical", command=canvas.yview)
     canvas.configure(yscrollcommand=vsb.set)
@@ -258,8 +158,7 @@ if __name__ == '__main__':
 
     frame.bind("<Configure>", lambda event, canvas=canvas: onFrameConfigure(canvas))
 
-    # Instructions
-
+    #  Building display of app
     if hasattr(sys, "_MEIPASS"):
         logo_location = os.path.join(sys._MEIPASS, 'ipa logo.jpg')
     else:
@@ -274,26 +173,7 @@ if __name__ == '__main__':
     ttk.Label(frame, text=intro_text_p3, wraplength=546, justify=LEFT, font=("Calibri", 11), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 30))
 
     ttk.Label(frame, text="Start Application: ", wraplength=546, justify=LEFT, font=("Calibri", 12, 'bold'), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 10))
-    ttk.Button(frame, text="Select Input Sheet", command=file_select, style='my.TButton').pack(anchor='nw', padx=(30, 30), pady=(0, 30))
-
-    ttk.Label(frame, text="Options:", justify=LEFT, font=("Calibri", 12, 'bold'), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 10))
-
-    # Dropdown
-
-    ttk.Label(frame, text="Select Detection Sensitivity:", justify=LEFT, font=("Calibri", 11), style='my.TLabel').pack(anchor='nw', padx=(30,0))
-
-    sensitivity = StringVar(frame)
-    w = ttk.OptionMenu(frame, sensitivity, "Medium (Default)", "Maximum", "High", "Medium (Default)", "Low", "Minimum", style='my.TMenubutton').pack(anchor='nw', padx=(30,0))
-    # A combobox may be a better choice
-    
-    # Checkbox
-
-    # checkTemp = IntVar() #IntVar only necessary if need app to change upon being checked
-    # checkTemp.set(0)
-    # checkCmd.get() == 0 # tests if unchecked, = 1 if checked
-
-    #checkTemp = 1
-    #checkBox1 = ttk.Checkbutton(frame, variable=checkTemp, onvalue=1, offvalue=0, text="Output Session Log", style='my.TCheckbutton').pack(anchor='nw', padx=(30, 0), pady=(10,0), fill=X)
+    ttk.Button(frame, text="Select Input File", command=file_select, style='my.TButton').pack(anchor='nw', padx=(30, 30), pady=(0, 30))
 
     ttk.Label(frame, text="Status:", justify=LEFT, font=("Calibri", 12, 'bold'), style='my.TLabel').pack(anchor='nw', padx=(30,0), pady=(30, 0))
     first_message = "Awaiting dataset selection."
@@ -301,16 +181,4 @@ if __name__ == '__main__':
     ttk.Label(frame, text=first_message, wraplength=546, justify=LEFT, font=("Calibri Italic", 11), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 12))
 
     # Listener
-
     root.mainloop()  # constantly looping event listener
-
-# Extra code
-
-#     ### Implement this for improvements to formatting
-#     # text = tk.Text(frame, height=1, font="Helvetica 12")
-#     # text.tag_configure("bold", font="Helvetica 12 bold")
-
-#     # text.insert("end", the_message)
-#     # text.insert("end", "world", "bold")
-#     # text.configure(state="disabled")
-#     # text.pack()
