@@ -23,7 +23,6 @@ app_title = "IPA's Facial Validator for Windows"
 class GUI:
     def __init__(self, master):
         self.master = master
-        # master.frame(self, borderwidth=4)
         master.title(app_title)
         
         if hasattr(sys, "_MEIPASS"):
@@ -33,31 +32,6 @@ class GUI:
 
         master.iconbitmap(icon_location)
         master.minsize(width=686, height=666)
-
-def input(the_message):
-    try:
-        ttk.Label(frame, text=the_message, wraplength=546, justify=LEFT, font=("Calibri", 11), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 12))
-
-        def evaluate(event=None):
-            pass
-
-            #if entry.get() in ['y', 'yes']:
-            #    return True
-            #res.configure(text="Ergebnis: " + )
-
-    except:  # ## add specific Jupyter error here
-        pass
-
-    Label(frame, text="Your Expression:").pack()
-    entry = Entry(frame)
-    entry.bind("<Return>", evaluate)
-    if ttk.Button(frame, text="Submit", command=evaluate, style='my.TButton').pack() is True:
-        return True
-    entry.pack()
-    time.sleep(8)
-    res = Label(frame)
-    res.pack()
-    return ('No')
 
 
 def tkinter_display(the_message):
@@ -77,18 +51,8 @@ def file_select():
         tkinter_functions_conn, datap_functions_conn = Pipe()
         tkinter_messages_conn, datap_messages_conn = Pipe()
 
-        ### Importing dataset and printing messages ###
+        ### Sending dataset path into Pipe for processor file ###
         tkinter_functions_conn.send(dataset_path)
-
-        #p_import = Process(target=PII_data_processor.import_dataset, args=(datap_functions_conn, datap_messages_conn))
-        #p_import.start()
-
-        #tkinter_display(tkinter_messages_conn.recv())
-
-        #import_results = tkinter_functions_conn.recv()  # dataset, dataset_path, label_dict, value_label_dict
-        #dataset = import_results[0]
-        #dataset_path = import_results[1]
-
         
         ### Main function call ###
         p_initialize = Process(target=fv_processor.read_files, args=(datap_functions_conn, datap_messages_conn))
@@ -158,8 +122,6 @@ if __name__ == '__main__':
     helpmenu.add_command(label="- Excel Template", command=template)
     helpmenu.add_command(label="- Csv Template", command=csv_template)
     helpmenu.add_command(label="- Source", command=source_credit)
-    #helpmenu.add_command(label="- Placeholder", command=PII_field_names)
-    #helpmenu.add_command(label="- Placeholder", command=PII_field_names)
     helpmenu.add_separator()
     helpmenu.add_command(label="File Issue on GitHub", command=contact)
     helpmenu.add_separator()
@@ -185,8 +147,6 @@ if __name__ == '__main__':
     canvas = Canvas(root)
     frame = Frame(canvas, width=606, height=636, bg="white")
     frame.place(x=30, y=30)
-    #frame.pack_propagate(False)
-    #frame.pack()
 
     vsb = Scrollbar(root, orient="vertical", command=canvas.yview)
     canvas.configure(yscrollcommand=vsb.set)
@@ -197,8 +157,7 @@ if __name__ == '__main__':
 
     frame.bind("<Configure>", lambda event, canvas=canvas: onFrameConfigure(canvas))
 
-    # Instructions
-
+    #  Building display of app
     if hasattr(sys, "_MEIPASS"):
         logo_location = os.path.join(sys._MEIPASS, 'ipa logo.jpg')
     else:
@@ -215,30 +174,10 @@ if __name__ == '__main__':
     ttk.Label(frame, text="Start Application: ", wraplength=546, justify=LEFT, font=("Calibri", 12, 'bold'), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 10))
     ttk.Button(frame, text="Select Input File", command=file_select, style='my.TButton').pack(anchor='nw', padx=(30, 30), pady=(0, 30))
 
-    #ttk.Label(frame, text="Options:", justify=LEFT, font=("Calibri", 12, 'bold'), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 10))
-
-    # Dropdown
-
-    #ttk.Label(frame, text="Select Detection Sensitivity:", justify=LEFT, font=("Calibri", 11), style='my.TLabel').pack(anchor='nw', padx=(30,0))
-
-    #sensitivity = StringVar(frame)
-    #w = ttk.OptionMenu(frame, sensitivity, "Medium (Default)", "Maximum", "High", "Medium (Default)", "Low", "Minimum", style='my.TMenubutton').pack(anchor='nw', padx=(30,0))
-    # A combobox may be a better choice
-    
-    # Checkbox
-
-    # checkTemp = IntVar() #IntVar only necessary if need app to change upon being checked
-    # checkTemp.set(0)
-    # checkCmd.get() == 0 # tests if unchecked, = 1 if checked
-
-    #checkTemp = 1
-    #checkBox1 = ttk.Checkbutton(frame, variable=checkTemp, onvalue=1, offvalue=0, text="Output Session Log", style='my.TCheckbutton').pack(anchor='nw', padx=(30, 0), pady=(10,0), fill=X)
-
     ttk.Label(frame, text="Status:", justify=LEFT, font=("Calibri", 12, 'bold'), style='my.TLabel').pack(anchor='nw', padx=(30,0), pady=(30, 0))
     first_message = "Awaiting dataset selection."
     first_message = datetime.now().strftime("%H:%M:%S") + '     ' + first_message
     ttk.Label(frame, text=first_message, wraplength=546, justify=LEFT, font=("Calibri Italic", 11), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 12))
 
     # Listener
-
     root.mainloop()  # constantly looping event listener

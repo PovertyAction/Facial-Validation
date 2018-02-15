@@ -3,13 +3,11 @@
 
 # # Instructions
 # 
-# 1. This script is meant to assist in the detection of PII (personally identifiable information) and subsequent removal from a dataset.
+# 1. This script is meant to assist in the validation of identity using facial recognition.
 # 
 # 2. If running it in Jupyter Notebook, press 'shift + return' or 'shift + enter' to navigate through the script and fill in the prompts when asked.
 # 
 # 3. If you have any errors or feedback, contact jjacobson@poverty-action.org or researchsupport@poverty-action.org
-# 
-# <b>This is a tool to help you identify PII, but ensuring the dataset is devoid of PII is ultimately still your responsibility.</b> Be extremely careful with potential identifiers, especially geographic, because they can sometimes be combined with other variables to become identifying.
 # 
 # (If this script is loaded via Jupyter Notebook, despite loading in the browser, it is running locally on your machine and will continue to run fine regardless of internet access.)
 
