@@ -4,7 +4,7 @@
 
 This application detects whether listings of paired pictures are of the same person. It is most often used to help ensure the same person is being interviewed across waves or to detect when someone enrolls more than once in a program. Though this tool can be helpful, ensuring identity is ultimately still your responsibility.
 
-You can help make this tool better, or have it customized to your needs, by working with GRDS on your upcoming project that involves participant photos.
+This tool is current listed as an alpha release because it is completely untested on IPA field pictures due to a lack of data access. You can help make this tool better, or have it customized to your needs, by working with GRDS on your upcoming project that involves participant photos.
 
 ### How to Use
 
