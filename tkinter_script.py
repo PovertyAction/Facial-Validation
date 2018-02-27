@@ -31,7 +31,8 @@ class GUI:
             icon_location = 'IPA-Asia-Logo-Image.ico'
 
         master.iconbitmap(icon_location)
-        master.minsize(width=686, height=666)
+        master.geometry('686x666')
+        master.minsize(280,200)
 
 
 def tkinter_display(the_message):
@@ -141,7 +142,7 @@ if __name__ == '__main__':
     root.style.configure('my.TCheckbutton', background='white')
     root.style.configure('my.TMenubutton', background='white')
 
-    root.resizable(False, False) # prevents window from being resized
+    root.resizable(True, True) # prevents window from being resized
 
     # Display
 
