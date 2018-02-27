@@ -39,6 +39,7 @@ def tkinter_display(the_message):
     the_message = datetime.now().strftime("%H:%M:%S") + '     ' + the_message
     ttk.Label(frame, text=the_message, wraplength=546, justify=LEFT, font=("Calibri Italic", 11), style='my.TLabel').pack(anchor='nw', padx=(30, 30), pady=(0, 12))
     frame.update()
+    canvas.yview('scroll', '1', 'units')
 
 def file_select():
 
