@@ -16,8 +16,8 @@ import pandas as pd
 
 intro_text = "This application detects whether listings of paired pictures are of the same person. It is most often used to help ensure the same person is being interviewed across waves or to detect when someone enrolls more than once in a program. Though this tool can be helpful, ensuring identity is ultimately still your responsibility."
 intro_text_p2 = "To use this application you must create an input file according to the template (see help menu). The results will then be output as 'results.csv' to the directory containing your images. Any file with the same name located there will be overwritten. A '1' on the threshold test denotes that the person in the images is the same, while a '0' indicates that they appear not to be."
-intro_text_p3 = "You can help make this tool better, or have it customizatized to your needs, by working with GRDS on your upcoming project that involves participant photos."
-app_title = "IPA's Facial Validator for Windows"
+intro_text_p3 = "This is an alpha program, built without access to studies' participant pictures on which to test or train it. Please help improve this program by filling out the survey on your experience using it (Help -> Provide Feedback)."
+app_title = "IPA's Facial Validator - Windows"
 
 
 class GUI:
@@ -87,6 +87,9 @@ def photo_guidelines():
 def comparison():
     webbrowser.open('https://github.com/PovertyAction/Facial-Validation/blob/master/README.md')
 
+def survey():
+    webbrowser.open('https://goo.gl/forms/x5wyySTDX1fwcxjv1')
+
 def restart_program():
     """Restarts the current program.
     Note: this function does not return. Any cleanup action (like
@@ -118,7 +121,7 @@ if __name__ == '__main__':
 
     # create more pulldown menus
     helpmenu = Menu(menubar, tearoff=0)
-    helpmenu.add_command(label="About (v0.1.0)", command=about)
+    helpmenu.add_command(label="About (v0.2.0)", command=about)
     helpmenu.add_command(label="- Excel Template", command=template)
     helpmenu.add_command(label="- Csv Template", command=csv_template)
     helpmenu.add_command(label="- Source", command=source_credit)
@@ -126,7 +129,8 @@ if __name__ == '__main__':
     helpmenu.add_command(label="Photography Guidelines", command=photo_guidelines)
     helpmenu.add_command(label="File Issue on GitHub", command=contact)
     helpmenu.add_separator()
-    helpmenu.add_command(label="Contribute", command=contact)
+    helpmenu.add_command(label="Provide Feedback", command=survey)
+    #helpmenu.add_command(label="Contribute", command=contact)
     menubar.add_cascade(label="Help", menu=helpmenu)
 
     root.configure(background='light gray', menu=menubar)
