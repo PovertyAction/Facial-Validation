@@ -9,7 +9,7 @@ from datetime import datetime
 from multiprocessing import Process, Pipe
 import multiprocessing
 multiprocessing.freeze_support()
-import fv_processor
+import desktop_app_backend
 from PIL import ImageTk, Image
 import webbrowser
 import pandas as pd
@@ -26,9 +26,9 @@ class GUI:
         master.title(app_title)
         
         if hasattr(sys, "_MEIPASS"):
-            icon_location = os.path.join(sys._MEIPASS, 'IPA-Asia-Logo-Image.ico')
+            icon_location = os.path.join(sys._MEIPASS, 'app.ico')
         else:
-            icon_location = 'IPA-Asia-Logo-Image.ico'
+            icon_location = 'app.ico'
 
         master.iconbitmap(icon_location)
         master.geometry('686x666')
@@ -57,7 +57,7 @@ def file_select():
         tkinter_functions_conn.send(dataset_path)
         
         ### Main function call ###
-        p_initialize = Process(target=fv_processor.read_files, args=(datap_functions_conn, datap_messages_conn))
+        p_initialize = Process(target=desktop_app_backend.read_files_and_analyze_images, args=(datap_functions_conn, datap_messages_conn))
         p_initialize.start()
 
         tkinter_display(tkinter_messages_conn.recv())
