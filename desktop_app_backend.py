@@ -2,13 +2,13 @@
 # coding: utf-8
 
 # # Instructions
-# 
+#
 # 1. This script is meant to assist in the validation of identity using facial recognition.
-# 
+#
 # 2. If running it in Jupyter Notebook, press 'shift + return' or 'shift + enter' to navigate through the script and fill in the prompts when asked.
-# 
+#
 # 3. If you have any errors or feedback, contact jjacobson@poverty-action.org or researchsupport@poverty-action.org
-# 
+#
 # (If this script is loaded via Jupyter Notebook, despite loading in the browser, it is running locally on your machine and will continue to run fine regardless of internet access.)
 
 # # Import and Set-up
@@ -45,7 +45,7 @@ def read_files_and_analyze_images(arguments_pipe, messages_pipe):
     #file_pairings = pd.read_excel('Filenames.xlsx')
     dataset_path = arguments_pipe.recv()
     dataset_path_l = dataset_path.lower()
-    
+
     raise_error = False
     status_message = False
 
@@ -81,7 +81,7 @@ def read_files_and_analyze_images(arguments_pipe, messages_pipe):
     file_pairings = file_pairings.reset_index(drop=True)
 
     if images_directory_path.endswith(('"', "'")):
-        images_directory_path = images_directory_path[1:-1] 
+        images_directory_path = images_directory_path[1:-1]
 
     if not images_directory_path.endswith(('/', "\\")):
         if '/' in images_directory_path:
@@ -94,7 +94,7 @@ def read_files_and_analyze_images(arguments_pipe, messages_pipe):
     for row_index in range(file_pairings.shape[0]):
         for col_index in range(2):
             #Add directory path
-            file_pairings.iloc[row_index, col_index] = images_directory_path + file_pairings.iloc[row_index, col_index]
+            file_pairings.iloc[row_index, col_index] = images_directory_path + str(file_pairings.iloc[row_index, col_index])
 
     status_message = '**SUCCESS**: The template has been read successfully.'
     smart_print(status_message, messages_pipe)
@@ -106,7 +106,7 @@ def read_files_and_analyze_images(arguments_pipe, messages_pipe):
     smart_print(status_message, messages_pipe)
 
     status_message, file_pairings = fvp.compare_images(file_pairings)
-    
+
     #Save result
     file_pairings.to_csv(images_directory_path + 'results.csv', index=False)
 
