@@ -8,12 +8,12 @@ This tool is current listed as an alpha release because it is untested on IPA fi
 
 ### How to Use
 
-There are two alternatives to use this application, with and without GUI.
+There are two alternatives to use this application, with and without GUI (user interface).
 
 #### Using app with GUI
 
 1. Take photographs of participants in line with [the guidelines](https://github.com/PovertyAction/Facial-Validation/blob/master/Photography%20Guidelines%20for%20Facial%20Validation.pdf).
-- The best way to ensure success is to train enumerators, pilot field photography and data collection, and work with GRDS to ensure the pictures collected during pilot are able to be successfully analyzed by the tool. GRDS can also continue to monitor photo quality throughout data collection. 
+- The best way to ensure success is to train enumerators, pilot field photography and data collection, and work with GRDS to ensure the pictures collected during pilot are able to be successfully analyzed by the tool. GRDS can also continue to monitor photo quality throughout data collection.
 
 2. Place all images in a single folder on your machine and prepare [the input template](https://github.com/PovertyAction/Facial-Validation/blob/master/input_template.xlsx). You'll provide the path to the directory containing the images, and paired image filenames to compare.
 
@@ -33,11 +33,17 @@ In case you would like to run the app without user interaction, please follow th
 
 4. Examine the output file, results.csv in the folder where you run the `.exe.`
 
-### Help and Support
-Please check the issues section on GitHub for previously solved issues. If no solution is available there feel free to open an issue; the author will attempt to respond in a reasonably timely fashion. If your request is urgent you may contact researchsupport@poverty-action.org
+#### Launching app for testing
 
-### Contributing
-We welcome contributions in any form! To contribute please fork the project make your changes and submit a pull request. We will do our best to work through any issues with you and get your code merged into the main branch.
+Run `python desktop_app_frontend.py`. Install dependencies python dependencies with `pip install -r requirements.txt`.
+
+### To create .exe from source file for GUI app
+
+`pyinstaller --onefile --windowed --icon=app.ico --add-data="app.ico;." --add-data="ipa logo.jpg;." --add-data="shape_predictor_68_face_landmarks.dat;." --add-data="dlib_face_recognition_resnet_model_v1.dat;." desktop_app_frontend.py`
+
+`pyinstaller --onefile --add-data="shape_predictor_68_face_landmarks.dat;." --add-data="dlib_face_recognition_resnet_model_v1.dat;." gui_less_app.py`
+
+To create windows application installer, follow [this](https://www.youtube.com/watch?v=RrpvNvklmFA https://www.youtube.com/watch?v=DTQ-atboQiI&t=135s) tutorial:  (same approach as used in the [PII Detector](https://github.com/PovertyAction/PII_detection#to-create-windows-application-installer)
 
 ### Citing
 If you have used this application in a study or publication, please use the following:
@@ -49,13 +55,3 @@ King, D. High Quality Face Recognition with Deep Metric Learning. [online] Blog.
 
 ### Licensing
 This project is [MIT Licensed](https://github.com/PovertyAction/Facial-Validation/blob/master/LICENSE).
-
- 
-
-### To create .exe from source file for GUI app
-
-`pyinstaller --onefile --windowed --icon=app.ico --add-data="app.ico;." --add-data="ipa logo.jpg;." --add-data="shape_predictor_68_face_landmarks.dat;." --add-data="dlib_face_recognition_resnet_model_v1.dat;." desktop_app_frontend.py`
-
-`pyinstaller --onefile --add-data="shape_predictor_68_face_landmarks.dat;." --add-data="dlib_face_recognition_resnet_model_v1.dat;." gui_less_app.py`
-
-<!-- .\gui_less_app.exe input_example\baseline_pics input_example\secondwave_pics input_example\pic_name_to_caseid.csv -->

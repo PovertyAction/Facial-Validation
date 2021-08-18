@@ -1,20 +1,3 @@
-
-# coding: utf-8
-
-# # Instructions
-#
-# 1. This script is meant to assist in the validation of identity using facial recognition.
-#
-# 2. If running it in Jupyter Notebook, press 'shift + return' or 'shift + enter' to navigate through the script and fill in the prompts when asked.
-#
-# 3. If you have any errors or feedback, contact jjacobson@poverty-action.org or researchsupport@poverty-action.org
-#
-# (If this script is loaded via Jupyter Notebook, despite loading in the browser, it is running locally on your machine and will continue to run fine regardless of internet access.)
-
-# # Import and Set-up
-
-# In[1]:
-
 import sys
 import os
 import glob
