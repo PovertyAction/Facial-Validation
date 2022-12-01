@@ -13,6 +13,8 @@ import desktop_app_backend
 from PIL import ImageTk, Image
 import webbrowser
 import pandas as pd
+import os
+import sys
 
 intro_text = "This application detects whether listings of paired pictures are of the same person. It is most often used to help ensure the same person is being interviewed across waves or to detect when someone enrolls more than once in a program. Though this tool can be helpful, ensuring identity is ultimately still your responsibility."
 intro_text_p2 = "To use this application you must create an input file according to the template (see help menu). The results will then be output as 'results.csv' to the directory containing your images. Any file with the same name located there will be overwritten. A '1' on the threshold test denotes that the person in the images is the same, while a '0' indicates that they appear not to be."
