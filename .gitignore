@@ -107,3 +107,6 @@ results.csv
 input_template - JJ.xlsx
 input_template - JJ short.xlsx
 Installable Project file.aip
+
+# visual studio  extensions
+.vs/
